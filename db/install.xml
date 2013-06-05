@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/diagrams/db" VERSION="20090305" COMMENT="XMLDB file for Moodle question/type/diagrams"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="question_diagrams" COMMENT="Options for diagrams answer questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="question"/>
+        <FIELD NAME="question" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id." PREVIOUS="id" NEXT="answers"/>
+        <FIELD NAME="answers" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Redundant. Comma-separated list of question_answer ids. SELECT id FROM question_answers WHERE question = ? ORDER BY id." PREVIOUS="question" NEXT="topology"/>
+        <FIELD NAME="topology" TYPE="char" LENGTH="1023" NOTNULL="true" SEQUENCE="false" COMMENT="Coordinates Comma-separated list. Bars: Semicolon-separated list " PREVIOUS="answers" NEXT="graphofinternalforces"/>
+        <FIELD NAME="graphofinternalforces" TYPE="char" LENGTH="1023" NOTNULL="true" SEQUENCE="false" COMMENT="graphofinternalforces: Comma-Semicolon-separated list " PREVIOUS="topology" NEXT="width"/>
+        <FIELD NAME="width" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="60" SEQUENCE="false" COMMENT="Tamaño en 'puntos básicos'/100 (en tanto porciento)del dibujo. OJO MMP OJO" PREVIOUS="graphofinternalforces" NEXT="mifeedback"/> 
+        <FIELD NAME="mifeedback" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" COMMENT="Dibuja en verde OK y bloquea graficas si OK. OJO MMP OJO" PREVIOUS="width" NEXT="internalforceserror"/> 
+        <FIELD NAME="internalforceserror" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="15" SEQUENCE="false" COMMENT="Error admitido en graficas en %. OJO MMP OJO" PREVIOUS="mifeedback" NEXT="abscissaerror"/> 
+        <FIELD NAME="abscissaerror" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="10" SEQUENCE="false" COMMENT="Error admitido en las abscisas  en %. OJO MMP OJO" PREVIOUS="internalforceserror" NEXT="beam"/> 
+	<FIELD NAME="beam" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Se ajustan los margenes del dibujo segun la estructura sea una viga o un portico. OJO MMP OJO" PREVIOUS="abscissaerror"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="question"/>
+        <KEY NAME="question" TYPE="foreign" FIELDS="question" REFTABLE="question" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

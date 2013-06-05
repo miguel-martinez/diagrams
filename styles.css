@@ -1,0 +1,9 @@
+.que.diagrams .answer {
+    padding: 0.3em;
+    width: 10%;
+    display: inline;
+    visibility:hidden;
+}
+.que.diagrams .answer input {
+    width: 10%;
+}
