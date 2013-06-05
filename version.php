@@ -30,4 +30,4 @@ $plugin->version   = 2011102932;
 
 $plugin->requires  = 2011102932;
 
-$plugin->maturity  = MATURITY_VERDE;
+$plugin->maturity  = MATURITY_BETA;
