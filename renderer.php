@@ -179,9 +179,9 @@ class qtype_diagrams_renderer extends qtype_renderer {
       //Parametro codificado que se pasa a javascript
       $javascript_parametro=$arg1."&".$barText."&".$solText."&".$flagviga."&".$mdl_nq."&".$debug."&".$qa->get_qt_field_name('id')."&".$flag_botones."&".$mi_feedback."&".$internalforceserror."&".$abscissaerror;
       
-
-      $result .=html_writer::tag('div', "</script><script type=\"text/javascript\" src=\"http://localhost/moodle/question/type/diagrams/diagrams.js?".base64_encode($javascript_parametro)."\"></script>", array('class' => 'qtext'));
-      return $result;
+     global $CFG;
+     $result .=html_writer::tag('div', "</script><script type=\"text/javascript\" src=\"".$CFG->wwwroot."/question/type/diagrams/diagrams.js?".base64_encode($javascript_parametro)."\"></script>", array('class' => 'qtext'));
+     return $result;
     }
 
     public function specific_feedback(question_attempt $qa) {
