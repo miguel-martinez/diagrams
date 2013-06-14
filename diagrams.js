@@ -2,56 +2,56 @@
 /**
  * Structure diagrams question java
  *
- * @copyright  2013 Jose Ignacio Hernando García
+ * @copyright  2013 Jose Ignacio Hernando García, Miguel Martínez Pañeda
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 //------------------------------------------------------------------------------
 function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_botones, mi_feedback, internalforceserror, abscissaerror){
     //--------------------------------------------------------------------------
-    // Contenedores
-    var contenedorCanvas;         // Contenedor del canvas
-//    var contenedorTextoPregunta;  // Padre del anterior
-//    var contenedorAblock;         // Hermano del anterior. Contiene la resp. 
-//    var contenedorAnswer;         // Hijo del anterior. Contiene input
-    var input;                    // El input de la respuesta de moodle
+    // Containers
+    var contenedorCanvas;         // Canvas container
+//    var contenedorTextoPregunta;  // Father of the previous one
+//    var contenedorAblock;         // Brother of the previous. Contains the answer. 
+//    var contenedorAnswer;         // Son of the previous. Contains input
+    var input;                    // The input of moodle answer
     //--------------------------------------------------------------------------
-    // Botones
+    // Botons
     var ibar_select;
     var curva_select;
-    var _scale_button;    //+- de scala
+    var _scale_button;    //+- scale
     var scale__button;
-    var _scaleEsf_button; //+- de scala Esfuerzos
+    var _scaleEsf_button; //+- internal forces scale
     var scaleEsf__button;
-    var s_input;          //coordenada s
-    var s_tol_input;      //tolerancia en s
-    var S_input;          //coordenada S
-    var S_tol_input;      //tolerancia en S  
-    var esf_input;        //valor del esfuerzo (en la abscisa local S)
-    var esf_tol_input;    //tolerancia en esf
-    var pan_button;       //pan sobre el dibujo
+    var s_input;          //s coordinate
+    var s_tol_input;      //s tolerancy
+    var S_input;          //S coordinate
+    var S_tol_input;      //S tolerancy  
+    var esf_input;        //stress value (in the local abscissa S)
+    var esf_tol_input;    //esf tolerancy
+    var pan_button;       //pan over the drawing
     //--------------------------------------------------------------------------
     // Canvas
     var canvasImageView,  canvasImageTemp, contextImageView, contextImageTemp;
     //--------------------------------------------------------------------------
     var scale=0, _xG=0, _yG=0, _X0=0, _Y0=0; 
-    var _xbar= 100000; //Coor max y min de barras
+    var _xbar= 100000; //Bars max and min coordinates
     var xbar_=-100000; 
     var _ybar= 100000;
     var ybar_=-100000; 
-    var solM=0;        //Esfuerzo Máximo
+    var solM=0;        //Maximum stress
     var scaleEsf=-1;
-    var margenes=0.75; //margenes de los diagramas
-    var s_tol_flag;    //Indicador de si esta activo s o S 
-                       //necesario para modificar, o no,  S_tol al cambiar ibar.
-    var S_tol;         //coordenada S
-    var esf_tol=10;    //Tolerancia en esf
+    var margenes=0.75; //Diagrams margins
+    var s_tol_flag;    //Indicator of which one of s or S is activated
+                       //necessary to modify, or not,  S_tol when changes ibar.
+    var S_tol;         //S coordinate
+    var esf_tol=10;    //esf tolerancy
     //--------------------------------------------------------------------------
     var bar= new Array() ; fbar();
-    var cbar;                       // Barra "actual"
-    var sol= new Array() ; fsol();  // Solucion
-    var esf= new Array() ; fesf();  // Respuesta alumnos
+    var cbar;                       // "actual" bar
+    var sol= new Array() ; fsol();  // Solution
+    var esf= new Array() ; fesf();  // Students answer
     var esfi=new Array() ;                       
-    var eOK= new Array() ; fchk();  // chk respuestas
+    var eOK= new Array() ; fchk();  // chk answers
     //--------------------------------------------------------------------------
     var pan=false; 
     var ipan_mousedown=0;                      
@@ -68,7 +68,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	sorry2("addEventListener/attachEvent");
 	return;
     }
-    //return;
+    
 
     //--------------------------------------------------------------------------
     function sorry1() {	
@@ -137,7 +137,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	s_tol_input.value=0.25;
 	S_tol=s_tol_input.value*tool.lg/scale;
 	S_tol_input.value=S_tol;
-	s_tol_flag=1;  //Inicialmente está activa s (coordenada relativa) 
+	s_tol_flag=1;  //Initially s its activated(relative coordinate) 
     }
     //--------------------------------------------------------------------------
     function canvasWidthHeight(canvasImageView, contenedorCanvas) {
@@ -181,20 +181,20 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    }
 	}
 	else {
-	    //OJO OJO AQUI SE PARA IE8
+	    //AtenttioN! here IE8 stops!
 	    alert('Error: Your browser does not support getContext!');
 	    throw "exit"; 
-	    null.dummy;   //Esto proboca un error y se sale del script
+	    null.dummy;   //This causes and error and it gets off the script
 	    
 	    sorry1();
 	    sorry2("canvasImageView.getContext");
 	    return;
 	}
-	//Se añade texto para navegadores en los que no funciona canvas
+	//Its provided text for web browsers in which the canvas does not work
 	canvasText(canvasImageView);
     }
     //-------------------------------------------------------------------------
-    //Texto alternativo a canvas
+    //Alternative text to canvas
     function canvasText(canvasImageView) {
 	elemento1 = document.createElement('p');
 	elemento1.appendChild(document.createTextNode('Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below'));
@@ -223,8 +223,8 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	canvasImageView.appendChild(elemento1);
     }
     //--------------------------------------------------------------------------
-    //Se ponen los datos del segundo argumento del script en la variable bar
-    //y se calculan los valores max y min de las coordenadas
+    //The data of the second argument of the script are placed in the bar variable
+    //and the maximum and minimum value of the coordinates are calculated
     function fbar() { 
 	var aux=barText.split(";");
 	for (var i=0;i<aux.length;i++) {
@@ -237,17 +237,17 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	
     }   
     //--------------------------------------------------------------------------
-    //Se ponen los datos del tercer argumento del script en la variable sol
+    //The data of the third argument of the script are placed in the sol variable
     function fsol() { 
 	
 	solM=0;
-	var aux_=solText.split(";");       // Barras
+	var aux_=solText.split(";");       // Bars
 	for (var i=0;i<aux_.length;i++) {
-	    var aux=aux_[i].split("x");    // Leyes (definidas por tramos)
+	    var aux=aux_[i].split("x");    // Stresses (definied by sections)
 	    var sol_=new Array();
 	    for (var j=0;j<aux.length;j++) {
-		sol_[j]=aux[j].split(","); // Valores
-		//Se calcula el máximo esfuerzo en valor absoluto
+		sol_[j]=aux[j].split(","); // Values
+		//The maximum stress is calculated in absolut value
 		solM=Math.max(solM,Math.abs(sol_[j][1]),Math.abs(sol_[j][3])); 
 		if(sol_[j].length>4){solM=Math.max(solM,Math.abs(sol_[j][5]));}
 	    }
@@ -255,16 +255,16 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	}
     }       
     //--------------------------------------------------------------------------
-    // Se ponen los datos del input de Moodle en la variable esf
-    // Y se impide escribir en input de Moodle
+    // The data of the Moodle input are placed on the esf variable
+    // And keeps from writing in the moodle input
     //function fesf2() {}
     function fesf2() { 
-	//No se permite escribir en respuesta de moodle 
+	//It keeps from writing in moodle answer
 	input.readOnly=true;
-	// Lo que sigue no funciona con IE
+	// What follos does not work with IE
 	// input.setAttribute("type", "hidden");
 	// input.type="hidden";
-        // Descomentar la linea siguiente para asegurarse de hidden la respuesta
+        // Activate next line to ensure of hidden the answer
 	//input.parentNode.parentNode.style.visibility = 'hidden'; 
 	if(input.value) {
 	    var aux=input.value.split("#");
@@ -355,7 +355,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 			
 		    }
 		    
-		    if(nisol==6) { //parábola
+		    if(nisol==6) { //parabola
 			
 			var solIsos=isos2(sol[ibar][iesf][0],sol[ibar][iesf][1],
 					  sol[ibar][iesf][2],sol[ibar][iesf][3],
@@ -395,7 +395,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
     }
     //--------------------------------------------------------------------------
     function maxM(x0,y0,x1,y1,x2,y2) {
-	// Abscisa y ordenada del maximo de una parábola definida por 3 puntos
+	// Abscissa and ordinate of the maximum of a parabola defined by three points
 	var a=(y0*x1-y0*x2-x0*y1+x0*y2-y2*x1+x2*y1)/
 	    (x0*x0*x1-x0*x0*x2-x0*x1*x1+x0*x2*x2-x2*x2*x1+x2*x1*x1);
 	var b=-(x1*x1*y0-y2*x1*x1-y1*x0*x0-x2*x2*y0+y1*x2*x2+y2*x0*x0)/
@@ -473,7 +473,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 		contextImageView.quadraticCurveTo(__x1,__y1,_x2, _y2);
 	    }
 	    //--------------------------------------------------------------
-	    else { //recta
+	    else { //straight line
 		contextImageView.lineTo(_x0, _y0);
 		contextImageView.lineTo(_x1, _y1);
 	    }
@@ -503,7 +503,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	mibutton = mibutton0.cloneNode(true);
 	mibutton.type="button";
 	//---------------------------------------------------------------------
-	//Segundo nivel de tablas (tabla en una celda de la primera tabla)
+	//Second level of tables (table in a cell of the first table)
 	var miTabla2; 
 	miTabla2 = document.createElement('table');
 	miTabla2.style.border=".5px solid #888888";
@@ -735,10 +735,10 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
     }
     //-------------------------------------------------------------------------
     function load() {
-	contenedores();  //Inician variables de contenedores
-	fesf2();         //Se leen datos de input y se ponen en esf 
+	contenedores();  //Initiate containers variables
+	fesf2();         //The data of input its read and put in esf 
 	if(flag_botones==1) {
-	    tablaBotones();  //Inician variables de botones
+	    tablaBotones();  //Initiate botonos variables
 	    ini_botones();
 	}
 	{
@@ -746,8 +746,8 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	}
 	canvas();
 	ini_xGyG();
-	solDraw();  //Solo para depuración
-	esfDraw();  //Se recupera el dibujo de intentos anteriores
+	solDraw();  //Just for depuration
+	esfDraw();  //It recovers the drawing from previous attempts
 	barDraw();
 	//---------------------------------------------------------------------
 	f_scale__button=new f_scale__buttons();
@@ -809,7 +809,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	var func = f_scale__button[ev.type];
 	if (func) {func(ev);}
     }
-    var f_scale__button;  //Instancia al siguiente obj. Se crea (new) en load() 
+    var f_scale__button;  //Instance to next object. (new) its created in load() 
     var f_scale__buttons=function () {
 	var toolb = this;
 	this.started = false;
@@ -843,7 +843,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	var func = f_scaleEsf__button[ev.type];
 	if (func) {func(ev);}
     }
-    var f_scaleEsf__button;  //Instancia al siguiente obj. Se crea (new)en load 
+    var f_scaleEsf__button;  //Instance to next object. (new) its created in load 
     var f_scaleEsf__buttons=function () {
 	var toolb = this;
 	this.started = false;
@@ -893,7 +893,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    tool.Ibar(cbar,false,false);
 	    redraw();
 	    inputValue();
-	    //Se actualizan los botones 
+	    //The botons are updated
 	    if(s_tol_flag==1) {
 		S_tol=s_tol_input.value*tool.lg/scale;
 		S_tol_input.value=S_tol;
@@ -967,14 +967,13 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	contextImageView.clearRect(0, 0, canvasImageView.width, canvasImageView.height);
 	contextImageTemp.clearRect(0, 0, canvasImageView.width, canvasImageView.height);
 	ini_xGyG();
-	solDraw(); //Solo para depuración
+	solDraw(); //Just for depuration
 	esfDraw();
 	barDraw();
 	
 	if (esfi.length>0) {
-	    // Se dibujan los esfuerzos de la barra "actual". Sus esfuerzos aun
-	    // no se han pasado a la variable esf por lo que esfDraw() no los ha
-	    // dibujado.
+	    // Draws the stress of the actual bar. Its stresses have not been
+	    // deliver yet to the esf variable so esfDraw() has not drawn them yet
 	    solDrawIbar(esfi,bar[tool.ibar],"rgb(0,0,0)");
 	    contextImageView.stroke();
 	    contextImageView.closePath();     
@@ -1002,7 +1001,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    ev._y = ev._y-ev.pageY+ev.clientY;
 	}
 	
-	if (pan) {  //Con el flag pan se hace lo siguiente
+	if (pan) {  //You make the next with the flag pan
 	    ev_canvas_pan (ev);
 	    return;}	
 	// Call the event handler of the tool.
@@ -1036,7 +1035,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
  
     //------------------------------------------------------------------------- 
     // This object (tools) holds the implementation of each drawing tool.
-    var tool; // Se crea (new) en load() y se utiliza en ev_canvas()  
+    var tool; // (new) its created in load() and used in ev_canvas()  
     var tools = {};
     //-------------------------------------------------------------------------
     tools.curva = function () {
@@ -1046,29 +1045,29 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	/*
 	tool.started= false;
 
-	tool.x;       // Posicion del cursor P(x,y)
+	tool.x;       // Cursor position P(x,y)
 	tool.y;
-	tool.p_e1;    // Proyección sobre el eje de la barra de P(x,y)
-	tool.p_e1x;   // Coordenadas x e y de p_e1
+	tool.p_e1;    // Projection over the axis of the bar of P(x,y)
+	tool.p_e1x;   // x and y coordinates of p_e1
 	tool.p_e1y;
-	tool.p_e2;    // Proyección sobre el eje perp. a la barra de P(x,y)
-	tool.p_e1x;   // Coordenadas x e y de p_e12
+	tool.p_e2;    // Projection over the perpendicular axis to the bar of P(x,y)
+	tool.p_e1x;   // x and y coordinates of p_e12
 	tool.p_e1y;
 
 
-	tool.X;       // Coordenadas relativas de P(x,y) respecto el
-	tool.Y;       // origen de la barra
+	tool.X;       // Relative coordinates of P(x,y) from the origin of the bar
+	tool.Y;       // 
 
-	tool.x0;      // Posicion del punto anterior P0(x,y)
+	tool.x0;      // Position of previous point P0(x,y)
 	tool.y0;
-	tool.p0_e1;   // Proyección sobre el eje de la barra de P(x,y)
-	tool.p0_e2;   // Proyección sobre el eje perp. a la barra de P(x,y)
+	tool.p0_e1;   // Projection over the axis of the bar of P(x,y)
+	tool.p0_e2;   // Projection over the perpendicular axis to the bar of P(x,y)
 
-	tool.ibar;    // Numero de la barra "actual";
-	tool.X0;      // Punto inicial de la barra 
+	tool.ibar;    // Number of "actual" bar;
+	tool.X0;      // Initial point of the bar 
 	tool.Y0;
-	tool.lg       // Longitud de la barra
-	tool.e1x;     // Versores tangencial (e1) y normal (e2) de la barra 
+	tool.lg       // Bar lenght
+	tool.e1x;     // Tangential (e1) and perpendicular (e2) unitary vectors of the bar
 	tool.e1y;
 	tool.e2x;
 	tool.e2y;
@@ -1080,14 +1079,14 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 
 	this.Ibar0 =function(ibar,x0,y0) {
 	    this.started=true;
-	    tool.ibar=ibar;      // se usa para rellenar esf[this.ibar] al final
+	    tool.ibar=ibar;      // it is used to fill esf[this.ibar] at the end
 	      
 
 	    
 	    tool.X0=xG(bar[ibar][0]);
 	    tool.Y0=yG(bar[ibar][1]);
 	    if(!x0 || !y0) {
-		this.x0=tool.X0; //En un principio P0 es extremo de barra
+		this.x0=tool.X0; //Initially P0 its the bar end
 		this.y0=tool.Y0;
 		esf[tool.ibar]=[];
 	    }
@@ -1098,7 +1097,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    }
 
 	    
-	    //Versores tangencial (e1) y normal (e2) de la barra 
+	    //Tangential (e1) and perpendicular (e2) unitary vectors of the bar
 	    var Dx=xG(bar[ibar][2])-tool.X0;
 	    var Dy=yG(bar[ibar][3])-tool.Y0;
 	    this.lg=Math.sqrt(Dx*Dx+Dy*Dy);
@@ -1112,14 +1111,14 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	}
 
 	this.lineaP_P0 = function (x,y, p_e1_min,strokeStyle) {
-	    // Dibuja linea del punto P0 al P con las resticciones
+	    // Draws a line from point P0 to P with restrictions
 	    // p_e1>p_e1_min y p_e1<lg 
 	    //input.value=input.value+"lineaP_P0: tool.x0="+tool.x0+"tool.y0="+tool.y0+"tool.p0_e1:"+tool.p0_e1;
 	    tool.x=x;
 	    tool.y=y;
 	    tool.X=tool.x-this.X0;
 	    tool.Y=tool.y-this.Y0;
-	    //proyecciones
+	    //projections
 	    tool.p_e1=tool.e1x*tool.X+tool.e1y*tool.Y;
 	    if (S_tol>0) {
 		tool.p_e1=Math.round(tool.p_e1/scale/S_tol)*S_tol*scale;
@@ -1137,15 +1136,15 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 		tool.y=tool.Y0+tool.p_e2y+tool.p_e1y;
 	    }
 	    //input.value=input.value+",tool.p_e1:"+tool.p_e1;
-	    if (tool.p_e1<p_e1_min) {  // El punto queda a la izquierda
-		tool.p_e1=p_e1_min;    // del anterior
+	    if (tool.p_e1<p_e1_min) {  // The point is on the left
+		tool.p_e1=p_e1_min;    // of the previous
 		tool.p_e1x=tool.p_e1*tool.e1x;
 		tool.p_e1y=tool.p_e1*tool.e1y; 
 		tool.x=this.X0+tool.p_e2x+tool.p_e1x;
 		tool.y=this.Y0+tool.p_e2y+tool.p_e1y;
 	    }
-	    if (tool.p_e1>this.lg) {  // El punto queda  "fuera"
-		tool.p_e1=this.lg;    // de la barra
+	    if (tool.p_e1>this.lg) {  // The point lies "out"
+		tool.p_e1=this.lg;    // of the bar
 		tool.p_e1x=tool.p_e1*tool.e1x;
 		tool.p_e1y=tool.p_e1*tool.e1y; 
 		tool.x=tool.X0+tool.p_e2x+tool.p_e1x;
@@ -1157,7 +1156,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    contextImageTemp.clearRect(0, 0, 
 				       canvasImageTemp.width, 
 				       canvasImageTemp.height);	
-	    // Dibujo de la linea
+	    // Drawing of the line
 	    contextImageTemp.strokeStyle = strokeStyle;
 	    contextImageTemp.beginPath();
 	    contextImageTemp.moveTo(this.x0, this.y0);
@@ -1171,7 +1170,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    esf_input.value=tool.p_e2/scaleEsf;
 	}
 
-	this.update0=function(esc,escf) {//Cambios de escala, etc. 
+	this.update0=function(esc,escf) {//Scale changes, etc. 
 	    ini_xGyG();
 	    var aux=this.started;
 	    this.Ibar0(tool.ibar,
@@ -1192,7 +1191,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	this.mousemove = function (ev) {
 	    
 	    if (tool.started) {
-		//Dibuja linea del punto P0 al P
+		//Draws line from point P0 to P
 		tool.lineaP_P0(ev._x, ev._y, tool.p0_e1,strokeStyle); 
 	    }
 	}
@@ -1213,7 +1212,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	    if (Math.abs(tool.p0_e1-tool.lg)/tool.lg<.0001){
 		tool.started=false;
 		esf[tool.ibar]=esfi;
-		esfDraw(); // Así se chequean los resultados inmediatamente
+		esfDraw(); // Like this, the results are checked inmediatly
 		inputValue();
 	    }
 	};
@@ -1225,7 +1224,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 	this.touchmove = function (ev) {
 	    ev.preventDefault();   
 	    if (tool.started) {
-		//Dibuja linea del punto P0 al P
+		//Draws the line from point P0 to P
 		tool.lineaP_P0(ev._x, ev._y, tool.p0_e1,strokeStyle); 
 	    }
 	}
@@ -1249,70 +1248,69 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 
     //------------------------------------------------------------------------- 
     tools.parabola = function () {
-	strokeStyleaux="rgb(150,150,150)"; //Color lineas auxiliares
+	strokeStyleaux="rgb(150,150,150)"; //Color of auxiliar lines
 
-	// P =( x, y)  posición actual del cursor
-	// P0=(x0,y0)  posición anterior del cursor
-	//             Estos dos son heredados de tools.curva y como tools.line
-	//             también se hereda de tools.curva hacen lo mismo
-        // P1=(x1,y1)  Primero de los tres puntos de la parabóla. 
-	//             Se this.mousedown se pone (x1,y1)=(x0,y0) y
-        //             (x0,y0)=(x,y) cuando se "pincha" el segundo punto de la
-	//             parábola
+	// P =( x, y)  actual position of the cursor
+	// P0=(x0,y0)  previous position of the cursor
+	//             This two are inherited from tools.curva and as tools.line
+	//             it also inherited from tools.curva they made the same
+        // P1=(x1,y1)  First of the three points of the parabola.
+	//             If this.mousedown it puts (x1,y1)=(x0,y0) y
+        //             (x0,y0)=(x,y) when you click the second point of the
+	//             parabole
 	var tool = this;
 	tool.ivertice=1;	
-	tool.x1;      // Posicion del punto inicial de la parabola P1(x1,y1)
+	tool.x1;      // Position of the initial point of the parabole P1(x1,y1)
 	tool.y1;
-	tool.p1_e1;   // Proyección sobre el eje de la barra de P1=(x1,y1)
-	tool.p1_e2;   // Proyección sobre el eje perp. a la barra de P1=(x1,y1)
+	tool.p1_e1;   // Projection over the axis of the bar of P1=(x1,y1)
+	tool.p1_e2;   // Projection over the perpendicular axis to the bar of P1=(x1,y1)
 
 	this.mousemove = function (ev) {
 	    if (tool.started) {
-		// tool.ivertice se actualiza en this.mousedown
-                // Dependiendo de tool.ivertice se dibuja una recta o una 
-		// parábola (junto con alguna línea auxiliar)
+		// tool.ivertice its updated in this.mousedown
+                // Depending on tool.ivertice its drawn a strahight line or a 
+		// parabola (with some auxliar lines)
 		if (tool.ivertice<2) { 
-                    // Con dos puntos se dibuja una recta, que es la primera de
-		    // las dos secantes de la parábola.
-		    // En este caso (x0,y0) es el punto inicial de la recta
-		    // Se dibuja una recta entre dicho punto y la posición
-		    // del cursor. La función lineaP_P0 y las variables
-		    // (x0,y0) son heredada de tools.curva
+                    // A straight line is drawn with two points, which is the first 
+		    // of the two secants of the parabola.
+		    // In this case (x0,y0) it's the initial point of the straight line
+		    // It's drawn a straight line between that point and the position
+		    // of the cursor. The lineal function P_P0 and the variables
+		    // (x0,y0) and inherited from tools.curva
 
-                    //Dib linea secante de P0 al P 
+                    // Draws secant line from P0 to P 
 		    tool.lineaP_P0(ev._x, ev._y, tool.p0_e1, strokeStyleaux); 
 		}
 		else {  
-		    // Si tool.ivertice=3. Se dibuja la parabola
-		    // En this.mousedown se pone (x1,y1)=(x0,y0) y
-		    // (x0,y0)=(x,y). Se trata pues de dibujar una parábola
-		    // definida por los puntos P1=(x1,y1), P0=(x0,y0) y 
-		    // P=(x,y) con ciertas restricciones (como que sus 
-		    // proyecciones estén contenidas sobre el eje de la barra,
-		    // etc.)
-		    // También se dibujan las tangentes a la parabola y algunas
-		    // lineas auxiliares.
+		    // If tool.ivertice=3. The parabola its drawn
+		    // In this.mousedown it puts (x1,y1)=(x0,y0) and
+		    // (x0,y0)=(x,y). It consists of drawing a parabola
+		    // defined by the points P1=(x1,y1), P0=(x0,y0) y 
+		    // P=(x,y) with some restrictions (as that its projections 
+		    // are held in the axis of the bar,etc.)
+		    // They are also drawn the tangents to the parabola and some
+		    // auxiliar lines.
 		  
-		    // A continuación se dibuja la segunda secante 
-		    // de la parábola, de P a P0 con las restricciones
-		    // definidas en linea P_P0
+		    // Next its drawn the second secant to the parabola, 
+		    // from P to P0 with the restrictions defined in the
+		    // line P_P0
 		    tool.lineaP_P0(ev._x, ev._y, tool.p1_e1, strokeStyleaux); 
-		    // xtg, ytg son las coordenads del punto Ptg 
-		    // en el cual se cortan las tangentes de la parábola
-		    var xtg,ytg; //Punto de corte de las tangentes
-		    if (tool.p_e1>tool.p0_e1) { //Tercer punto > que 2o punto
+		    // xtg, ytg are the coordinates of the point Ptg 
+		    // in which the tangents of the parabola cross
+		    var xtg,ytg; // Point of cross of the tangents
+		    if (tool.p_e1>tool.p0_e1) { //Third point > than second point
 		
 		
 			var aux=isos2(tool.p1_e1, tool.p1_e2, 
 				      tool.p0_e1, tool.p0_e2,
 				      tool.p_e1 , tool.p_e2);
-			// xtg, ytg son las coordenads del punto P0tg 
-			// en el cual se cortan las tangentes de la parábola
+			// xtg, ytg are the coordinates of the point P0tg 
+			// in which the tangents of the parabola cross
 			// var xtg,ytg;
 			xtg=(tool.x1+tool.x)/2-2*aux*tool.e2x;
 			ytg=(tool.y1+tool.y)/2-2*aux*tool.e2y;
 			
-			// Dibujo de parábola P1, P0tg, P
+			// Drawing of the parabola P1, P0tg, P
 			contextImageTemp.beginPath();
 			contextImageTemp.strokeStyle = strokeStyle;
 			contextImageTemp.moveTo(tool.x1,tool.y1);
@@ -1320,34 +1318,34 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 							  tool.x,tool.y);
 			contextImageTemp.stroke();  
 			/*
-			// La secante P0, P se ha dibujado antes del if
-			// con las restricciones definidas por lineaP_P0
-			// Dibujo de recta secante P0,P1 
+			// The secant P0, P has been drawn before the if
+			// with the restrictions defined by lineaP_P0
+			// Drawing secant line P0,P1 
 			contextImageTemp.beginPath();
 			contextImageTemp.strokeStyle = strokeStyleaux;
 			contextImageTemp.moveTo(tool.x0,tool.y0);
 			contextImageTemp.lineTo(tool.x1,tool.y1);
-			// Dibujo de recta tangente  P1, P0tg
+			// Drawing tangent line  P1, P0tg
 			contextImageTemp.lineTo(x0tg, y0tg);
 			
-			// Dibujo de recta tangente P0tg, P
+			// Drawing tangent line P0tg, P
 			contextImageTemp.lineTo(tool.x,tool.y);
 			contextImageTemp.stroke();
 			contextImageTemp.closePath();
 			*/
 		    }
-		    else {//tercer punto < segundo punto:linea de cierre y desc
+		    else {//third point < second poine:enclosure line and desc
 				
 			var aux=isos2(tool.p1_e1, tool.p1_e2, 
 				      tool.p_e1,  tool.p_e2,
 				      tool.p0_e1, tool.p0_e2);
 			// var xtg,ytg; 
-			// xtg, ytg son las coordenads del punto Ptg 
-			// en el cual se cortan las tangentes de la parábola
+			// xtg, ytg are the coordinates of the point Ptg 
+			// en which the tangents of the parabola cross
 			xtg=(tool.x1+tool.x0)/2-2*aux*tool.e2x;
 			ytg=(tool.y1+tool.y0)/2-2*aux*tool.e2y;
 
-			// Dibujo de parábola P1, Ptg, P0  
+			// Drawing ot the parabola P1, Ptg, P0  
 			contextImageTemp.beginPath();
 			contextImageTemp.strokeStyle = strokeStyle;
 			contextImageTemp.moveTo(tool.x1,tool.y1);
@@ -1355,43 +1353,43 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 							  tool.x0,tool.y0);
 			contextImageTemp.stroke();  
 			/*
-			// La secante P0, P se ha dibujado antes del if
-			// con las restricciones definidas por lineaP_P0
-			// Dibujo de recta secante P, P1
+			// The secant P0, P has been drawn before the if
+			// with the restrictions defined by lineaP_P0
+			// Drawing secant line P, P1
 			contextImageTemp.beginPath();
 			contextImageTemp.strokeStyle = strokeStyleaux;
 			contextImageTemp.moveTo(tool.x,tool.y);
 			contextImageTemp.lineTo(tool.x1,tool.y1);
-			// Dibujo tangente P1, Ptg
+			// Drawing tangent line P1, Ptg
 			contextImageTemp.lineTo(xtg,ytg);
-			// Dibujo tangente Ptg, P0
+			// Drawing tangent line Ptg, P0
 			contextImageTemp.lineTo(tool.x0,tool.y0);
-			// Dibujo de "linea de cierre" P0, P1 
+			// Drawing enclosure line P0, P1 
 			contextImageTemp.lineTo(tool.x1,tool.y1);
 			contextImageTemp.stroke();
 			*/
 		    }
-		    // La secante P0, P se ha dibujado antes del if
-		    // con las restricciones definidas por lineaP_P0
+		    // The secant line P0, P has been drawn before the if
+		    // with the restrictiones defined by lineaP_P0
 		    contextImageTemp.beginPath();
 		    contextImageTemp.strokeStyle = strokeStyleaux;
-		    // Dibujo de recta (secante o linea de cierre)  P, P1
+		    // Drawing of the straight line (secant or enclosure line)  P, P1
 		    contextImageTemp.moveTo(tool.x,tool.y);
 		    contextImageTemp.lineTo(tool.x1,tool.y1);
-		    // Dibujo tangente P1, Ptg
+		    // Drawing tangent line P1, Ptg
 		    contextImageTemp.lineTo(xtg,ytg);
-		    // Dibujo tangente Ptg, (P0 o P)
+		    // Drawing tangent line Ptg, (P0 o P)
 		    if (tool.p_e1<tool.p0_e1) {
 			contextImageTemp.lineTo(tool.x0,tool.y0);
 		    }
 		    else {
 			contextImageTemp.lineTo(tool.x,tool.y);
 		    }
-		    // Dibujo de "linea de cierre" o secante P0, P1 
+		    // Drawing of the enclosure or tangent line P0, P1 
 		    contextImageTemp.moveTo(tool.x0,tool.y0);
 		    contextImageTemp.lineTo(tool.x1,tool.y1);
 		    contextImageTemp.stroke();
-		    // Dibujo del maximo;
+		    // Drawing of the maximum;
 		    aux=maxM(tool.p1_e1, tool.p1_e2, 
 			     tool.p0_e1, tool.p0_e2,
 			     tool.p_e1 , tool.p_e2);
@@ -1422,7 +1420,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 		    tool.p1_e2=tool.p0_e2;
 		    tool.p0_e2=tool.p_e2;
 		}
-		else { // No varia la abscisa. 'No cuenta'
+		else { // Abscissa does not change. 'It does not count'
 		    tool.ivertice=tool.ivertice-1;
 		    tool.p0_e2=tool.p_e2;
 		}
@@ -1430,7 +1428,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 		tool.y0 = tool.y;
 		tool.ivertice=tool.ivertice+1;	
 	    }
-	    else { //Tercer vertice de la parabola
+	    else { //Third vertex of the parabola
 		img_update();
 		if (tool.p_e1>tool.p0_e1) {
 		    esfi.push([tool.p1_e1/tool.lg,tool.p1_e2/scaleEsf,
@@ -1451,7 +1449,7 @@ function init(arg1,barText, solText,flagviga ,mdl_nq, depur, qt_field_name,flag_
 			     /tool.lg)<.0001){
 		    tool.started=false;
 		    esf[tool.ibar]=esfi;
-		    esfDraw(); // Así se chequean los resultados inmediatamente
+		    esfDraw(); // Like this the results are inmediatly checked
 		    inputValue();
 		}
 	    }
